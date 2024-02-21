@@ -20,7 +20,7 @@ async def read_root():
 
     image_input_layer = Image.fromarray(
         kohonen_som.get_input_layer().vectors.astype(np.uint8)
-    ).resize((400, 30), resample=Image.Resampling.NEAREST)
+    ).resize((400, 20), resample=Image.Resampling.NEAREST)
 
     image_node_map = Image.fromarray(
         kohonen_som.get_output_layer().nodes.astype(np.uint8)
