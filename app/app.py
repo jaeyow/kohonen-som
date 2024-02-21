@@ -6,17 +6,33 @@ from fastapi import FastAPI, Response
 
 app = FastAPI()
 
+INPUT_SIZE = 20
+OUTPUT_WIDTH = 100
+OUTPUT_HEIGHT = 100
+ITERATIONS = 1000
 
+
+@app.get("/", responses={200: {"content": {"image/png": {}}}}, response_class=Response)
 @app.get(
     "/kohonen", responses={200: {"content": {"image/png": {}}}}, response_class=Response
 )
-async def kohonen():
+async def kohonen(
+    input_size: int = INPUT_SIZE,
+    width: int = OUTPUT_WIDTH,
+    height: int = OUTPUT_HEIGHT,
+    iterations: int = ITERATIONS,
+):
     """
     Kohonen Self-Organizing Map (SOM) algorithm
     """
     try:
         kohonen_som = Kohonen(
-            None, random=True, input_size=20, width=100, height=100, max_iterations=1000
+            None,
+            random=True,
+            input_size=input_size,
+            width=width,
+            height=height,
+            iterations=iterations,
         )
 
         kohonen_som.fit()
