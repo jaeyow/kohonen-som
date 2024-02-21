@@ -30,7 +30,7 @@ class Kohonen:
         width=MAP_WIDTH,
         height=MAP_HEIGHT,
         learning_rate=INITIAL_LEARNING_RATE,
-        max_iterations=MAX_ITERATIONS,
+        iterations=MAX_ITERATIONS,
     ):
         """
         Initializes the Kohonen network
@@ -40,7 +40,7 @@ class Kohonen:
         self.width = width
         self.height = height
         self.learning_rate = learning_rate
-        self.max_iterations = max_iterations
+        self.iterations = iterations
         self.neighbourhood_radius = max(self.width, self.height) / 2
         self.init_neighbourhood_radius = max(self.width, self.height) / 2
         self.time_constant = self.calculate_time_constant()
@@ -75,8 +75,8 @@ class Kohonen:
         """
         if (
             iteration == 0
-            or iteration == self.max_iterations - 1
-            or iteration % (self.max_iterations / 4) == 0
+            or iteration == self.iterations - 1
+            or iteration % (self.iterations / 4) == 0
         ):
             nodes = np.copy(self.get_output_layer().nodes)
             progress_nodes.append(
@@ -96,7 +96,7 @@ class Kohonen:
             plt.show(block=False)
 
             print(
-                f"Iteration: {iteration:03}/{self.max_iterations-1} | Learning rate: {round(self.learning_rate, 4)} | Radius: {round(self.neighbourhood_radius, 4)}"
+                f"Iteration: {iteration:03}/{self.iterations-1} | Learning rate: {round(self.learning_rate, 4)} | Radius: {round(self.neighbourhood_radius, 4)}"
             )
             progress_end_time = time.time()
             self.print_elapsed_time(start_time, progress_end_time)
@@ -123,7 +123,7 @@ class Kohonen:
         """
         progress_nodes = []
         start_time = time.time()
-        for iteration in range(self.max_iterations):
+        for iteration in range(self.iterations):
 
             for current_input_vector in self.get_input_layer().vectors[0]:
                 self.get_output_layer().get_euclidean_matrix(current_input_vector)
@@ -143,7 +143,7 @@ class Kohonen:
             )
 
         print(
-            f"Kohonen training completed, input size: {self.input_size}, output size: {self.width}x{self.height}, iterations: {self.max_iterations}"
+            f"Kohonen training completed, input size: {self.input_size}, output size: {self.width}x{self.height}, iterations: {self.iterations}"
         )
 
         return progress_nodes
@@ -164,7 +164,7 @@ class Kohonen:
         """
         Calculates the time constant
         """
-        return self.max_iterations / np.log(self.init_neighbourhood_radius)
+        return self.iterations / np.log(self.init_neighbourhood_radius)
 
     class InputLayer:
         """
@@ -394,7 +394,7 @@ class NonVectorisedKohonen(Kohonen):
         """
         progress_nodes = []
         start_time = time.time()
-        for iteration in range(self.max_iterations):
+        for iteration in range(self.iterations):
             for current_input_vector in self.get_input_layer().vectors[0]:
                 self.get_output_layer().get_euclidean_matrix(current_input_vector)
                 self.get_output_layer().update_weights(
@@ -411,7 +411,7 @@ class NonVectorisedKohonen(Kohonen):
             )
 
         print(
-            f"Non-Vectorised Kohonen training completed, input size: {self.input_size}, output size: {self.width}x{self.height}, iterations: {self.max_iterations}"
+            f"Non-Vectorised Kohonen training completed, input size: {self.input_size}, output size: {self.width}x{self.height}, iterations: {self.iterations}"
         )
 
         return progress_nodes
