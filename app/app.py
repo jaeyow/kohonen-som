@@ -35,7 +35,7 @@ async def kohonen(
             iterations=iterations,
         )
 
-        kohonen_som.fit()
+        await kohonen_som.fit()
 
         image_input_layer = Image.fromarray(
             kohonen_som.get_input_layer().vectors.astype(np.uint8)

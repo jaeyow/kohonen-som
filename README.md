@@ -20,6 +20,8 @@ pip install "uvicorn[standard]"
 pip freeze > requirements.txt
 
 ## Running on Jupyter
+I have prepared a Jupyter notebook to demonstrate the Kohonen Self-Organizing Maps (SOM) algorithm. The notebook is available in the following link:
+[Jupyter Notebook](kohonen.ipynb)
 
 **Vectorised implementation using numpy**
 - Input layer: 20 colours

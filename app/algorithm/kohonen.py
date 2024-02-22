@@ -117,7 +117,7 @@ class Kohonen:
             f"Execution time (hh:mm:ss.ms): {elapsed_hours:02}:{elapsed_minutes:02}:{elapsed_seconds:02}.{elapsed_milliseconds}"
         )
 
-    def fit(self):
+    async def fit(self):
         """
         Trains the Kohonen network
         """
@@ -388,7 +388,7 @@ class NonVectorisedKohonen(Kohonen):
     implementation is kept for comparison purposes.
     """
 
-    def fit(self):
+    async def fit(self):
         """
         Trains the Kohonen network
         """
