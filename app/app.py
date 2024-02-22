@@ -3,6 +3,7 @@ from app.algorithm.kohonen import Kohonen
 import numpy as np
 from PIL import Image
 from fastapi import FastAPI, Response
+from mangum import Mangum
 
 app = FastAPI()
 
@@ -64,3 +65,6 @@ async def kohonen(
     except Exception as e:
         error_message = f"An error occurred: {str(e)}"
         return Response(error_message, status_code=500)
+
+
+handler = Mangum(app)

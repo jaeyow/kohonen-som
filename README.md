@@ -27,14 +27,14 @@ I have prepared a Jupyter notebook to demonstrate the Kohonen Self-Organizing Ma
 - Input layer: 20 colours
 - Output layer: 100x100 grid
 - Iterations: 1000
-- Execution time (hh:mm:ss.ms): 00:00:09.294
+- Execution time (hh:mm:ss.ms): 00:00:09.294 (around 9 seconds)
 ![Jupyter](/images/vectorised-1000.png)
 
 **Non-vectorised implementation using nested loops**
 - Input layer: 20 colours
 - Output layer: 100x100 grid
 - Iterations: 500
-- Execution time (hh:mm:ss.ms): 01:00:09
+- Execution time (hh:mm:ss.ms): 00:01:00.90 (around 1 minute)
 ![Jupyter](/images/non-vectorised-500.png)
 
 
