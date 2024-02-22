@@ -1,4 +1,4 @@
-from random import randint
+# from random import randint
 import math
 import time
 import numpy as np
@@ -126,13 +126,8 @@ class Kohonen:
         for iteration in range(self.iterations):
 
             for current_input_vector in self.get_input_layer().vectors[0]:
-                self.get_output_layer().get_euclidean_matrix(current_input_vector)
-
-                influence_matrix = self.get_output_layer().calculate_influence_matrix(
-                    self.neighbourhood_radius
-                )
                 self.get_output_layer().update_weights_matrix(
-                    current_input_vector, influence_matrix, self.learning_rate
+                    current_input_vector, self.neighbourhood_radius, self.learning_rate
                 )
 
             self.print_progress(iteration, progress_nodes, start_time)
@@ -321,6 +316,8 @@ class OutputLayer:
         """
         Updates the weights of the nodes in the output layer
         """
+        self.get_euclidean_matrix(current_input_vector)
+
         bmu_x, bmu_y = self.get_coordinates_of_bmu()
         for i in range(self.width):
             for j in range(self.height):
@@ -342,16 +339,14 @@ class OutputLayer:
                         * (current_input_vector - current_weight)
                     )
 
-    def update_weights_matrix(
-        self,
-        input_vector,
-        influence,
-        learning_rate,
-    ):
+    def update_weights_matrix(self, input_vector, neighbourhood_radius, learning_rate):
         """
         Updates the weights of the nodes in the output layer
         """
-        influence = np.expand_dims(influence, axis=-1)
+        self.get_euclidean_matrix(input_vector)
+        influence_matrix = self.calculate_influence_matrix(neighbourhood_radius)
+
+        influence = np.expand_dims(influence_matrix, axis=-1)
         self.nodes = self.nodes + (
             learning_rate * influence * (input_vector - self.nodes)
         )
@@ -396,7 +391,7 @@ class NonVectorisedKohonen(Kohonen):
         start_time = time.time()
         for iteration in range(self.iterations):
             for current_input_vector in self.get_input_layer().vectors[0]:
-                self.get_output_layer().get_euclidean_matrix(current_input_vector)
+
                 self.get_output_layer().update_weights(
                     current_input_vector,
                     self.neighbourhood_radius,
