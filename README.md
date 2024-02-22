@@ -56,8 +56,9 @@ This is the image of the swagger documentation:
 `docker run -p 5000:5000 kohonen-som:latest`
 
 - You can then try out the API by visiting the following URL:
-[Kohonen-SOM](http://0.0.0.0:5000/docs)
-FastAPI will provide a Swagger/OpenAPI documentation for the API, which is very useful for testing and debugging, so you won't even need a client like Postman to test the API anymore.
+[Kohonen-SOM Swagger on localhost](http://0.0.0.0:5000/docs)
+
+- FastAPI will provide a Swagger/OpenAPI documentation for the API, which is very useful for testing and debugging, so you won't even need a client like Postman to test the API anymore.
 
 ## Deploy to AWS
 
