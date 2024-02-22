@@ -37,17 +37,6 @@ I have prepared a Jupyter notebook to demonstrate the Kohonen Self-Organizing Ma
 - Execution time (hh:mm:ss.ms): 00:01:00.90 (around 1 minute)
 ![Jupyter](/images/non-vectorised-500.png)
 
-
-## Github Actions
-
-- blah
-
-## Swagger/OpenAPI documentation
-- http://0.0.0.0:5000/docs
-
-This is the image of the swagger documentation:
-![Swagger](/images/swagger-openapi.png)
-
 ## Run locally on docker
 - First we need to build the docker image
 `docker build -t kohonen-som .`
@@ -65,3 +54,9 @@ This is the image of the swagger documentation:
 To facilitate the deployment to AWS Lambda, I have created a Dockerfile that uses the AWS Lambda Python 3.11 runtime. The required dependencies will surely be over the 250mb uncompressed limit even when using multiple [Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-concepts.html#gettingstarted-concepts-layer), so I've decided to use [Lambda Container Images](https://docs.aws.amazon.com/lambda/latest/dg/images-create.html), to allow us up to 10GB  container size limit for our API. [The Dockerfile is available here](./Dockerfile).
 
 To Deploy our Lambda API to AWS, we have a few options, from Click-Ops, SAM, or even Amplify. For this type of project, I will probably use SAM, as it is simple and easy enough to integrate with [Github Actions](https://github.com/features/actions), should we want to add CI automation later on.
+
+## Swagger/OpenAPI documentation
+- http://0.0.0.0:5000/docs
+
+This is the image of the swagger documentation:
+![Swagger](/images/swagger-openapi.png)
