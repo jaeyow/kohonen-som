@@ -1,6 +1,6 @@
 # Kohonen Self-Organizing Maps (SOM) with FastAPI
 
-This is a Python implementation of [Kohonen Self-Organizing Maps (SOM)](https://en.wikipedia.org/wiki/Self-organizing_map), a type of unsupervised learning algorithm. Kohonen Maps are typically used for clustering and visualising so higher-dimensional data can be represented in lower dimensions, typically in 2D, as in a rectangular topology or grid.
+This is a Python implementation of [Kohonen Self-Organizing Maps (SOM)](https://en.wikipedia.org/wiki/Self-organizing_map), a type of unsupervised learning algorithm. Kohonen Maps are typically used for clustering and visualising so that higher-dimensional data can be represented in lower dimensions, typically in 2D like in a rectangular topology or grid.
 
 In addition to segmentation and clustering analysis, it is also a form of dimensionality reduction technique so that the high-dimensional data in the input layer can be represented in the output grid. 
 
@@ -17,6 +17,8 @@ A description for training a Kohonen SOM algorithm is [detailed here](./kohonen.
 A more popular clustering and segmentation algorithm is the [K-Means algorithm](https://www.analyticsvidhya.com/blog/2019/08/comprehensive-guide-k-means-clustering/), which is also a type of unsupervised learning algorithm. So applications and use cases for K-Means can also be applied to Kohonen SOM, such as:
 
 ### Customer Segmentation
+
+![Customer Segmentation](customer-segment-analysis-marketing-advertising-600nw-2134063767.webp)
 
 Given the features of  customers, for example age, income, and race, we can segment them into different groups, and then target them with different marketing strategies.
 
