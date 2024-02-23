@@ -7,12 +7,14 @@ from mangum import Mangum
 
 app = FastAPI()
 
+# Default values
 INPUT_SIZE = 20
 OUTPUT_WIDTH = 100
 OUTPUT_HEIGHT = 100
 ITERATIONS = 1000
 
 
+# Just ensure that / and /kohonen endpoints are working
 @app.get("/", responses={200: {"content": {"image/png": {}}}}, response_class=Response)
 @app.get(
     "/kohonen", responses={200: {"content": {"image/png": {}}}}, response_class=Response
@@ -24,42 +26,41 @@ async def kohonen(
     iterations: int = ITERATIONS,
 ):
     """
-    Kohonen Self-Organizing Map (SOM) algorithm
+    Kohonen Self-Organizing Map (SOM) algorithm using our python implementation
     """
     try:
-        kohonen_som = Kohonen(
-            None,
-            random=True,
+        som = Kohonen(
             input_size=input_size,
             width=width,
             height=height,
             iterations=iterations,
         )
 
-        await kohonen_som.fit()
-
-        im_concatenated_bytes = stitch_together(kohonen_som)
+        await som.fit()
 
         headers = {
             "Content-Disposition": 'inline; filename="kohonen_som_input_output.png"'
         }
-        return Response(im_concatenated_bytes, headers=headers, media_type="image/png")
+        return Response(
+            stitch_together_images(som), headers=headers, media_type="image/png"
+        )
 
     except Exception as e:
         error_message = f"An error occurred: {str(e)}"
-        print(error_message)
         return Response(error_message, status_code=500)
 
 
-def stitch_together(kohonen_som):
+def stitch_together_images(som):
+    """
+    Stitch together the input and output layers of the Kohonen SOM
+    The top part is the input layer and the bottom part is the output layer
+    """
     image_input_layer = Image.fromarray(
-        np.multiply(kohonen_som.get_input_layer().vectors, 255)
-        .round(0)
-        .astype(np.uint8)
+        np.multiply(som.input_layer.vectors, 255).round(0).astype(np.uint8)
     ).resize((400, 20), resample=Image.Resampling.NEAREST)
 
     image_node_map = Image.fromarray(
-        np.multiply(kohonen_som.get_output_layer().nodes, 255).round(0).astype(np.uint8)
+        np.multiply(som.output_layer.nodes, 255).round(0).astype(np.uint8)
     ).resize((400, 400))
 
     concatenated_image = Image.new(
