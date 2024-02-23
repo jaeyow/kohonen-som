@@ -38,6 +38,7 @@ Although it maybe computationally expensive, a Kohonen SOM can be used to compre
 ### Recommender Systems
 
 ![Recommender Systems](./images/recommender-system.jpeg)
+
 An online shopping platform can utilise users preferences to group them into different clusters and then recommend products based on the preferences of other users in the same cluster.
 
 ## Installation
