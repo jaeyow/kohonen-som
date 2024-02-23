@@ -15,7 +15,7 @@ class Kohonen:
     Attributes
     ----------
     output_layer : OutputLayer
-        specify and OutputLayer object, or None to create a new one
+        specify and OutputLayer object, or pass None to create a new output layer
     input_size : int
         the number of colours in the input layer
     width : int
@@ -40,7 +40,6 @@ class Kohonen:
 
     def __init__(
         self,
-        output_layer,
         input_size=NUM_COLOURS,
         width=MAP_WIDTH,
         height=MAP_HEIGHT,
@@ -59,15 +58,27 @@ class Kohonen:
         self.init_neighbourhood_radius = max(self.width, self.height) / 2
         self.time_constant = self.calculate_time_constant()
         self.input_layer = self.InputLayer(num_colours=input_size)
-        self.output_layer = (
-            output_layer
-            if output_layer is not None
-            else OutputLayer(width=width, height=height)
-        )
+        self.output_layer = OutputLayer(width=width, height=height)
 
     def print_progress(self, iteration, progress_nodes, start_time):
         """
-        Prints the progress of the Kohonen network
+        Prints the progress of the Kohonen network training process
+        ...
+
+        Attributes
+        ----------
+        iteration : int
+            the current iteration
+        progress_nodes : list
+            node information for interval parts of the iteration, this is to be have the ability display the state of
+            the network at different stages of the training process
+        start_time : float
+            the start time of the training process
+
+        Returns
+        -------
+        progress_nodes
+            return progress_nodes for client that want to display training progress
         """
         if (
             iteration == 0
@@ -97,6 +108,8 @@ class Kohonen:
             progress_end_time = time.time()
             self.print_elapsed_time(start_time, progress_end_time)
 
+        return progress_nodes
+
     def print_elapsed_time(self, start_time, end_time):
         """
         Prints the elapsed time
@@ -115,14 +128,27 @@ class Kohonen:
 
     async def fit(self):
         """
-        Trains the Kohonen network
+        Trains the Kohonen network using a vectorised approach
+        ...
+
+        Description
+        -----------
+        1. Iterate through the input layer vectors
+        2. The euclidian distance is calclulated between the input vector and all the output nodes
+        3. The Best Matching Unit (BMU) determined from this euclidian distance matrix
+        4. The influence is calculated for each node in the output layer, based on the BMU and the neighbourhood radius
+        5. The weights of the nodes are updated
+        6. The neighbourhood radius and learning rate are updated
+        7. The process is repeated for the number of iterations specified
+        Note:
+        - Iteration has to be done through a loop since the iteration is critical to the Kohonen algorithm
+        - We are also lopping through the input layer vectors, and this has to be done in sequential order of the input layer vectors
         """
         progress_nodes = []
         start_time = time.time()
         for iteration in range(self.iterations):
-
             for current_input_vector in self.input_layer.vectors[0]:
-                self.output_layer.update_weights_matrix(
+                self.output_layer.update_weights(
                     current_input_vector, self.neighbourhood_radius, self.learning_rate
                 )
 
@@ -188,6 +214,14 @@ class OutputLayer:
     def __init__(self, width, height):
         """
         Initializes the output layer
+        ...
+        Attributes
+        ----------
+        width : int
+            the width of the output layer
+        height : int
+            the height of the output layer
+
         """
         self.width = width
         self.height = height
@@ -200,24 +234,20 @@ class OutputLayer:
 
     def create_node_vectors(self):
         """
-        Returns a array of nodes where the values are in the RGB colour space
+        Returns a array of floats in the range [0.0, 1.0]. This is 3-dimension array that represents the RGB colour space,
+        and the size specified in the width and height attributes.
         """
         return np.random.random_sample(
             (self.width, self.height, Kohonen.NUM_DIMENSIONS)
         )
 
-    def euclidean_distance(self, input_vector, node_vector):
+    def calculate_euclidean_matrix(self, input_vector):
         """
-        Returns the Euclidean distance between two RGB vectors
+        Returns the Euclidean distance between two 3-dimensional vectors
         """
-        return np.sqrt(np.sum(((node_vector - input_vector) ** 2), axis=-1))
-
-    def get_euclidean_matrix(self, input_vector):
-        """
-        Returns the all the Euclidean distances between the input vector and the node vectors
-        and store them in a grid
-        """
-        self.euclidean_distances = self.euclidean_distance(input_vector, self.nodes)
+        self.euclidean_distances = np.sqrt(
+            np.sum(((self.nodes - input_vector) ** 2), axis=-1)
+        )
 
     def get_coordinates_of_bmu(self):
         """
@@ -246,53 +276,19 @@ class OutputLayer:
         """
         return np.copy(self.nodes)
 
-    def update_weights(
-        self,
-        current_input_vector,
-        neighbourhood_radius,
-        learning_rate,
-    ):
+    def update_weights(self, current_input_vector, neighbourhood_radius, learning_rate):
         """
         Updates the weights of the nodes in the output layer
         """
-        self.get_euclidean_matrix(current_input_vector)
-
-        bmu_x, bmu_y = self.get_coordinates_of_bmu()
-        for i in range(self.width):
-            for j in range(self.height):
-                distance_to_bmu = self.get_radial_distance(
-                    i,
-                    j,
-                    bmu_x,
-                    bmu_y,
-                )
-
-                current_weight = self.nodes[i, j]
-                self.nodes[i, j] = current_weight + (
-                    learning_rate
-                    * self.calculate_influence(distance_to_bmu, neighbourhood_radius)
-                    * (current_input_vector - current_weight)
-                )
-
-    def update_weights_matrix(self, input_vector, neighbourhood_radius, learning_rate):
-        """
-        Updates the weights of the nodes in the output layer
-        """
-        self.get_euclidean_matrix(input_vector)
-        influence_matrix = self.calculate_influence_matrix(neighbourhood_radius)
+        self.calculate_euclidean_matrix(current_input_vector)
+        influence_matrix = self.calculate_influence(neighbourhood_radius)
 
         influence = np.expand_dims(influence_matrix, axis=-1)
         self.nodes = self.nodes + (
-            learning_rate * influence * (input_vector - self.nodes)
+            learning_rate * influence * (current_input_vector - self.nodes)
         )
 
-    def calculate_influence(self, distance_to_bmu, neighbourhood_radius):
-        """
-        Calculates the influence of learning on the nodes
-        """
-        return math.exp(-(distance_to_bmu**2) / (2 * neighbourhood_radius**2))
-
-    def calculate_influence_matrix(self, neighbourhood_radius):
+    def calculate_influence(self, neighbourhood_radius):
         """
         Calculates the influence of learning on the nodes
         """
@@ -313,9 +309,38 @@ class NonVectorisedKohonen(Kohonen):
     implementation is kept for comparison purposes.
     """
 
+    def __init__(
+        self,
+        input_size=Kohonen.NUM_COLOURS,
+        width=Kohonen.MAP_WIDTH,
+        height=Kohonen.MAP_HEIGHT,
+        learning_rate=Kohonen.INITIAL_LEARNING_RATE,
+        iterations=Kohonen.MAX_ITERATIONS,
+    ):
+        super().__init__(
+            input_size=input_size,
+            width=width,
+            height=height,
+            learning_rate=learning_rate,
+            iterations=iterations,
+        )
+        self.output_layer = NonVectorisedOutputLayer(width=width, height=height)
+
     async def fit(self):
         """
-        Trains the Kohonen network
+        Trains the Kohonen network using Python nested loops
+
+        ...
+
+        Description
+        -----------
+        1. Iterate through the input layer vectors
+        2. The euclidian distance is calclulated between the input vector and all the output nodes
+        3. The Best Matching Unit (BMU) determined from this euclidian distance matrix
+        4. The influence is calculated for each node in the output layer, based on the BMU and the neighbourhood radius
+        5. The weights of the nodes are updated, by iterating through all the nodes in the output layer
+        6. The neighbourhood radius and learning rate are updated
+        7. The process is repeated for the number of iterations specified
         """
         progress_nodes = []
         start_time = time.time()
@@ -327,7 +352,7 @@ class NonVectorisedKohonen(Kohonen):
                     self.learning_rate,
                 )
 
-            self.print_progress(iteration, progress_nodes, start_time)
+            progress_nodes = self.print_progress(iteration, progress_nodes, start_time)
 
             self.learning_rate = self.calculate_learning_rate(iteration + 1)
             self.neighbourhood_radius = self.calculate_neighbourhood_radius(
@@ -339,3 +364,45 @@ class NonVectorisedKohonen(Kohonen):
         )
 
         return progress_nodes
+
+
+class NonVectorisedOutputLayer(OutputLayer):
+    """
+    Deprecated OutputLayer implementation - where the algorithm works as expected, however
+    it uses a naive approach with nested for-loops to update the weights of the nodes in the output layer. This
+    implementation is kept for comparison purposes.
+    """
+
+    def update_weights(
+        self,
+        current_input_vector,
+        neighbourhood_radius,
+        learning_rate,
+    ):
+        """
+        Updates the weights of the nodes in the output layer
+        """
+        self.calculate_euclidean_matrix(current_input_vector)
+
+        bmu_x, bmu_y = self.get_coordinates_of_bmu()
+        for i in range(self.width):
+            for j in range(self.height):
+                distance_to_bmu = self.get_radial_distance(
+                    i,
+                    j,
+                    bmu_x,
+                    bmu_y,
+                )
+                current_weight = self.nodes[i, j]
+                self.nodes[i, j] = current_weight + (
+                    learning_rate
+                    * self.calculate_influence(distance_to_bmu, neighbourhood_radius)
+                    * (current_input_vector - current_weight)
+                )
+
+    def calculate_influence(self, distance_to_bmu, neighbourhood_radius):
+        """
+        Calculates the influence of learning on the nodes
+        """
+
+        return math.exp(-(distance_to_bmu**2) / (2 * neighbourhood_radius**2))
