@@ -38,28 +38,7 @@ async def kohonen(
 
         await kohonen_som.fit()
 
-        image_input_layer = Image.fromarray(
-            np.multiply(kohonen_som.get_input_layer().vectors, 255)
-            .round(0)
-            .astype(np.uint8)
-        ).resize((400, 20), resample=Image.Resampling.NEAREST)
-
-        image_node_map = Image.fromarray(
-            np.multiply(kohonen_som.get_output_layer().nodes, 255)
-            .round(0)
-            .astype(np.uint8)
-        ).resize((400, 400))
-
-        concatenated_image = Image.new(
-            "RGB",
-            (image_input_layer.width, image_input_layer.height + image_node_map.height),
-        )
-        concatenated_image.paste(image_input_layer, (0, 0))
-        concatenated_image.paste(image_node_map, (0, image_input_layer.height))
-
-        with io.BytesIO() as buf:
-            concatenated_image.save(buf, format="PNG")
-            im_concatenated_bytes = buf.getvalue()
+        im_concatenated_bytes = stitch_together(kohonen_som)
 
         headers = {
             "Content-Disposition": 'inline; filename="kohonen_som_input_output.png"'
@@ -70,6 +49,31 @@ async def kohonen(
         error_message = f"An error occurred: {str(e)}"
         print(error_message)
         return Response(error_message, status_code=500)
+
+
+def stitch_together(kohonen_som):
+    image_input_layer = Image.fromarray(
+        np.multiply(kohonen_som.get_input_layer().vectors, 255)
+        .round(0)
+        .astype(np.uint8)
+    ).resize((400, 20), resample=Image.Resampling.NEAREST)
+
+    image_node_map = Image.fromarray(
+        np.multiply(kohonen_som.get_output_layer().nodes, 255).round(0).astype(np.uint8)
+    ).resize((400, 400))
+
+    concatenated_image = Image.new(
+        "RGB",
+        (image_input_layer.width, image_input_layer.height + image_node_map.height),
+    )
+    concatenated_image.paste(image_input_layer, (0, 0))
+    concatenated_image.paste(image_node_map, (0, image_input_layer.height))
+
+    with io.BytesIO() as buf:
+        concatenated_image.save(buf, format="PNG")
+        im_concatenated_bytes = buf.getvalue()
+
+    return im_concatenated_bytes
 
 
 handler = Mangum(app)

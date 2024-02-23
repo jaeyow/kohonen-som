@@ -12,13 +12,22 @@ Because our input data is made up of 3 components (features), the nodes in the o
 
 A description for training a Kohonen SOM algorithm is [detailed here](./kohonen.ipynb).
 
+## Kohonen Input and Output Layer
+
+A Kohonen SOM has two layers, the **input layer** and the **output layer**. The input layer is made up of the features of the data, while the output layer is made up of the nodes that will be trained to represent the input data. In this project, our input layer is made up of RGB colours, and the output layer is a 2D grid of nodes, each node also made up of RGB components. The image below shows a very simple SOM with an input layer of 3 features and an output layer of 16 nodes. In this project, we only have 3 features, however, you can have more features in the input layer. With our input features (and output node weights) conveniently RGB components, we can easily visualise the output layer as a 2D grid of colours.
+
+
+![Kohonen Input and Output Layer](./images/kohonen-detail.png)
+
+If you look at each node in the output layer, you will notice that there are 3 lines to each node. These lines represent the weight of each feature in the input layer. Each output node weight is also a 3-dimension vector, the same shape as the input layer, and also represent RGB dimension. When updating the node weights during training, the changes to the weight are easily visualised as colours.
+
 ## Applications and Use Cases
 
 A more popular clustering and segmentation algorithm is the [K-Means algorithm](https://www.analyticsvidhya.com/blog/2019/08/comprehensive-guide-k-means-clustering/), which is also a type of unsupervised learning algorithm. So applications and use cases for K-Means can also be applied to Kohonen SOM, such as:
 
 ### Customer Segmentation
 
-![Customer Segmentation](customer-segment-analysis-marketing-advertising-600nw-2134063767.webp)
+![Customer Segmentation](./images/customer-segment-analysis-marketing-advertising-600nw-2134063767.webp)
 
 Given the features of  customers, for example age, income, and race, we can segment them into different groups, and then target them with different marketing strategies.
 
@@ -28,6 +37,7 @@ Although it maybe computationally expensive, a Kohonen SOM can be used to compre
 
 ### Recommender Systems
 
+![Recommender Systems](./images/recommender-system.jpeg)
 An online shopping platform can utilise users preferences to group them into different clusters and then recommend products based on the preferences of other users in the same cluster.
 
 ## Installation
@@ -80,7 +90,7 @@ I have prepared a Jupyter notebook to demonstrate the Kohonen Self-Organizing Ma
 **Vectorised implementation using numpy**
 In my first attempt at implementing the Kohonen SOM algorithm, I used the typical Python nested loops following the algorithm [described here](./kohonen.ipynb) to the letter. However, I quickly realised that increasing the iterations to 200, 500, 1000 or more would slow it to a crawl, not very exciting when deploying it to production.
 
-The algorithm could be vectorised using numpy, which would make it more efficient, and faster. I have implemented both versions and compared the execution times, as shown below. The vectorised implementation is around **12x** faster than the non-vectorised version.
+The algorithm could be vectorised using numpy, which would make it more efficient, and faster. I have implemented both versions and compared the execution times, as shown below. The vectorised implementation is around **76x** faster than the non-vectorised version.
 
 - Input layer: 20 colours
 - Output layer: 100x100 grid
@@ -92,7 +102,8 @@ The algorithm could be vectorised using numpy, which would make it more efficien
 - Input layer: 20 colours
 - Output layer: 100x100 grid
 - Iterations: 1000
-- Execution time (hh:mm:ss.ms): 00:01:48.90 (nearly two minutes!)
+- Execution time (hh:mm:ss.ms): 00:10:08.91 (over ten minutes!)
+![Jupyter](/images/non-vectorised-1000.png)
 
 ## Deploy to AWS
 
