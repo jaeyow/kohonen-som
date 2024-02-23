@@ -81,7 +81,6 @@ pip freeze > requirements.txt
 ## Swagger/OpenAPI documentation
 - http://0.0.0.0:5000/docs
 
-This is the image of the swagger documentation:
 ![Swagger](/images/swagger-openapi.png)
 
 ## Running on Jupyter
