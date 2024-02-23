@@ -39,11 +39,15 @@ async def kohonen(
         await kohonen_som.fit()
 
         image_input_layer = Image.fromarray(
-            kohonen_som.get_input_layer().vectors.astype(np.uint8)
+            np.multiply(kohonen_som.get_input_layer().vectors, 255)
+            .round(0)
+            .astype(np.uint8)
         ).resize((400, 20), resample=Image.Resampling.NEAREST)
 
         image_node_map = Image.fromarray(
-            kohonen_som.get_output_layer().nodes.astype(np.uint8)
+            np.multiply(kohonen_som.get_output_layer().nodes, 255)
+            .round(0)
+            .astype(np.uint8)
         ).resize((400, 400))
 
         concatenated_image = Image.new(
@@ -64,6 +68,7 @@ async def kohonen(
 
     except Exception as e:
         error_message = f"An error occurred: {str(e)}"
+        print(error_message)
         return Response(error_message, status_code=500)
 
 

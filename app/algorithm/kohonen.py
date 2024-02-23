@@ -89,7 +89,7 @@ class Kohonen:
             )
             plt.figure()
             plt.axis("off")
-            plt.imshow(nodes.astype("uint8"), aspect="1")
+            plt.imshow(nodes, aspect="1")
             plt.title(
                 f"Kohonen SOM ({self.get_output_layer().width}x{self.get_output_layer().height}), iteration: {iteration}"
             )
@@ -234,8 +234,8 @@ class Kohonen:
             """
             Returns a array of num_colours random RGB values
             """
-            return np.random.randint(
-                0, 255, (1, self.num_colours, Kohonen.NUM_DIMENSIONS)
+            return np.random.random_sample(
+                (1, self.num_colours, Kohonen.NUM_DIMENSIONS)
             )
 
 
@@ -253,8 +253,6 @@ class OutputLayer:
         self.name = "OutputLayer"
         self.nodes = self.create_node_vectors()
         self.euclidean_distances = np.zeros((self.width, self.height))
-        self.vector_bmu_coordinates = []
-        self.influence = 1
         self.node_coordinates = np.indices((self.width, self.height)).transpose(
             (1, 2, 0)
         )
@@ -263,8 +261,8 @@ class OutputLayer:
         """
         Returns a array of nodes where the values are in the RGB colour space
         """
-        return np.random.randint(
-            0, 255, (self.width, self.height, Kohonen.NUM_DIMENSIONS)
+        return np.random.random_sample(
+            (self.width, self.height, Kohonen.NUM_DIMENSIONS)
         )
 
     def euclidean_distance(self, input_vector, node_vector):
@@ -328,16 +326,12 @@ class OutputLayer:
                     bmu_y,
                 )
 
-                if distance_to_bmu < neighbourhood_radius:
-
-                    current_weight = self.nodes[i, j]
-                    self.nodes[i, j] = current_weight + (
-                        learning_rate
-                        * self.calculate_influence(
-                            distance_to_bmu, neighbourhood_radius
-                        )
-                        * (current_input_vector - current_weight)
-                    )
+                current_weight = self.nodes[i, j]
+                self.nodes[i, j] = current_weight + (
+                    learning_rate
+                    * self.calculate_influence(distance_to_bmu, neighbourhood_radius)
+                    * (current_input_vector - current_weight)
+                )
 
     def update_weights_matrix(self, input_vector, neighbourhood_radius, learning_rate):
         """
@@ -355,11 +349,6 @@ class OutputLayer:
         """
         Calculates the influence of learning on the nodes
         """
-        # bmu_x, bmu_y = self.get_coordinates_of_bmu()
-        # distance_to_bmu = self.get_radial_distance(
-        #     node_coordinate[0], node_coordinate[1], bmu_x, bmu_y
-        # )
-
         return math.exp(-(distance_to_bmu**2) / (2 * neighbourhood_radius**2))
 
     def calculate_influence_matrix(self, neighbourhood_radius):
@@ -391,7 +380,6 @@ class NonVectorisedKohonen(Kohonen):
         start_time = time.time()
         for iteration in range(self.iterations):
             for current_input_vector in self.get_input_layer().vectors[0]:
-
                 self.get_output_layer().update_weights(
                     current_input_vector,
                     self.neighbourhood_radius,
