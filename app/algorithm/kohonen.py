@@ -8,7 +8,25 @@ np.set_printoptions(precision=5, suppress=True)
 
 class Kohonen:
     """
-    Kohonen network implementation
+    Kohonen SOM network implementation
+
+    ...
+
+    Attributes
+    ----------
+    output_layer : OutputLayer
+        specify and OutputLayer object, or None to create a new one
+    input_size : int
+        the number of colours in the input layer
+    width : int
+        the width of the output layer
+    height : int
+        the height of the output layer
+    learning_rate : float
+        the learning rate of the current iteration
+    iterations : int
+        the number of iterations to train the network
+
     """
 
     MAX_ITERATIONS = 300
@@ -19,12 +37,10 @@ class Kohonen:
     INITIAL_NEIGHBOURHOOD_RADIUS = max(MAP_WIDTH, MAP_HEIGHT) / 2
     TIME_CONSTANT = MAX_ITERATIONS / np.log(INITIAL_NEIGHBOURHOOD_RADIUS)
     INITIAL_LEARNING_RATE = 0.1
-    RANDOM = True
 
     def __init__(
         self,
         output_layer,
-        random=RANDOM,
         input_size=NUM_COLOURS,
         width=MAP_WIDTH,
         height=MAP_HEIGHT,
@@ -34,7 +50,6 @@ class Kohonen:
         """
         Initializes the Kohonen network
         """
-        self.random = random
         self.input_size = input_size
         self.width = width
         self.height = height
@@ -43,30 +58,12 @@ class Kohonen:
         self.neighbourhood_radius = max(self.width, self.height) / 2
         self.init_neighbourhood_radius = max(self.width, self.height) / 2
         self.time_constant = self.calculate_time_constant()
-        self.input_layer = self.InputLayer(random=random, num_colours=input_size)
+        self.input_layer = self.InputLayer(num_colours=input_size)
         self.output_layer = (
             output_layer
             if output_layer is not None
             else OutputLayer(width=width, height=height)
         )
-
-    def get_input_layer(self):
-        """
-        Returns the input layer of the Kohonen network
-        """
-        return self.input_layer
-
-    def get_num_colours(self):
-        """
-        Returns the number of colours in the input layer
-        """
-        return self.input_layer.num_colours
-
-    def get_output_layer(self):
-        """
-        Returns the output layer of the Kohonen network
-        """
-        return self.output_layer
 
     def print_progress(self, iteration, progress_nodes, start_time):
         """
@@ -77,7 +74,7 @@ class Kohonen:
             or iteration == self.iterations - 1
             or iteration % (self.iterations / 4) == 0
         ):
-            nodes = np.copy(self.get_output_layer().nodes)
+            nodes = np.copy(self.output_layer.nodes)
             progress_nodes.append(
                 {
                     "iteration": iteration,
@@ -90,7 +87,7 @@ class Kohonen:
             plt.axis("off")
             plt.imshow(nodes, aspect="1")
             plt.title(
-                f"Kohonen SOM ({self.get_output_layer().width}x{self.get_output_layer().height}), iteration: {iteration}"
+                f"Kohonen SOM ({self.output_layer.width}x{self.output_layer.height}), iteration: {iteration}"
             )
             plt.show(block=False)
 
@@ -124,8 +121,8 @@ class Kohonen:
         start_time = time.time()
         for iteration in range(self.iterations):
 
-            for current_input_vector in self.get_input_layer().vectors[0]:
-                self.get_output_layer().update_weights_matrix(
+            for current_input_vector in self.input_layer.vectors[0]:
+                self.output_layer.update_weights_matrix(
                     current_input_vector, self.neighbourhood_radius, self.learning_rate
                 )
 
@@ -165,73 +162,18 @@ class Kohonen:
         Class that represents the input layer of the Kohonen network
         """
 
-        def __init__(self, random, num_colours):
+        def __init__(self, num_colours):
             """
             Initializes the input layer
             """
-            self.random = random
             self.num_colours = num_colours
             self.name = "InputLayer"
             self.vectors = self.generate_input_vectors()
 
         def generate_input_vectors(self):
             """
-            Returns a array of RGB values
-            """
-            if self.random:
-
-                random_vectors = self.generate_random_vectors()
-                return random_vectors
-
-            fixed_vectors = self.generate_fixed_vectors()
-            self.num_colours = fixed_vectors.shape[1]
-            return fixed_vectors
-
-        def generate_fixed_vectors(self):
-            """
-            Returns a array of 30 fixed RGB values, to create a deterministic output
-            """
-            rgb_values = [
-                [
-                    [247, 3, 0],
-                    [252, 5, 0],
-                    [239, 8, 3],
-                    [232, 0, 3],
-                    [255, 3, 0],
-                    [255, 3, 3],
-                    [249, 5, 3],
-                    [247, 3, 5],
-                    [234, 8, 3],
-                    [247, 3, 5],
-                    [3, 255, 0],
-                    [0, 247, 3],
-                    [0, 252, 5],
-                    [3, 239, 8],
-                    [3, 234, 4],
-                    [0, 232, 3],
-                    [3, 255, 0],
-                    [0, 250, 5],
-                    [0, 250, 5],
-                    [0, 250, 5],
-                    [3, 0, 255],
-                    [3, 0, 247],
-                    [5, 0, 252],
-                    [8, 3, 239],
-                    [8, 5, 250],
-                    [0, 3, 232],
-                    [3, 3, 255],
-                    [5, 3, 249],
-                    [3, 5, 247],
-                    [3, 7, 240],
-                ]
-            ]
-
-            rgb_array = np.array(rgb_values)
-            return rgb_array
-
-        def generate_random_vectors(self):
-            """
-            Returns a array of num_colours random RGB values
+            Returns a array of floats in the range [0.0, 1.0], where each vector represents a sample from our dataset.
+            This 3 dimensional input vector actually represent a colour in the RGB colour space.
             """
             return np.random.random_sample(
                 (1, self.num_colours, Kohonen.NUM_DIMENSIONS)
@@ -378,8 +320,8 @@ class NonVectorisedKohonen(Kohonen):
         progress_nodes = []
         start_time = time.time()
         for iteration in range(self.iterations):
-            for current_input_vector in self.get_input_layer().vectors[0]:
-                self.get_output_layer().update_weights(
+            for current_input_vector in self.input_layer.vectors[0]:
+                self.output_layer.update_weights(
                     current_input_vector,
                     self.neighbourhood_radius,
                     self.learning_rate,

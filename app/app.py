@@ -27,18 +27,17 @@ async def kohonen(
     Kohonen Self-Organizing Map (SOM) algorithm
     """
     try:
-        kohonen_som = Kohonen(
+        kohonen = Kohonen(
             None,
-            random=True,
             input_size=input_size,
             width=width,
             height=height,
             iterations=iterations,
         )
 
-        await kohonen_som.fit()
+        await kohonen.fit()
 
-        im_concatenated_bytes = stitch_together(kohonen_som)
+        im_concatenated_bytes = stitch_together(kohonen)
 
         headers = {
             "Content-Disposition": 'inline; filename="kohonen_som_input_output.png"'
@@ -53,13 +52,11 @@ async def kohonen(
 
 def stitch_together(kohonen_som):
     image_input_layer = Image.fromarray(
-        np.multiply(kohonen_som.get_input_layer().vectors, 255)
-        .round(0)
-        .astype(np.uint8)
+        np.multiply(kohonen_som.input_layer.vectors, 255).round(0).astype(np.uint8)
     ).resize((400, 20), resample=Image.Resampling.NEAREST)
 
     image_node_map = Image.fromarray(
-        np.multiply(kohonen_som.get_output_layer().nodes, 255).round(0).astype(np.uint8)
+        np.multiply(kohonen_som.output_layer.nodes, 255).round(0).astype(np.uint8)
     ).resize((400, 400))
 
     concatenated_image = Image.new(
