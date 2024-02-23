@@ -1,4 +1,4 @@
-# Kohonen Self-Organizing Maps (SOM) with FastAPI
+# Kohonen Self-Organizing Maps (SOM) with FastAPI and AWS Lambda Container Images
 
 This is a Python implementation of [Kohonen Self-Organizing Maps (SOM)](https://en.wikipedia.org/wiki/Self-organizing_map), a type of unsupervised learning algorithm. Kohonen Maps are typically used for clustering and visualising so that higher-dimensional data can be represented in lower dimensions, typically in 2D like in a rectangular topology or grid.
 
