@@ -160,6 +160,7 @@ I have prepared a Jupyter notebook to demonstrate the Kohonen Self-Organising Ma
 [Jupyter Notebook](kohonen.ipynb)
 
 **Vectorised implementation using numpy**
+
 In my first attempt at implementing the Kohonen SOM algorithm, I used the typical Python nested loops following the algorithm [described here](./kohonen.ipynb) to the letter. However, I quickly realised that increasing the iterations to 200, 500, 1000 or more would slow it to a crawl, not very exciting when deploying it to production.
 
 The algorithm could be vectorised using numpy, which would make it more efficient, and faster. I have implemented both versions and compared the execution times, as shown below. The vectorised implementation is around **76x** faster than the non-vectorised version.
@@ -171,6 +172,7 @@ The algorithm could be vectorised using numpy, which would make it more efficien
 ![Jupyter](/images/vectorised-1000.png)
 
 **Non-vectorised implementation using nested loops**
+
 - Input layer: 20 colours
 - Output layer: 100x100 grid
 - Iterations: 1000
