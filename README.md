@@ -48,7 +48,7 @@ An online shopping platform can utilise users preferences to group them into dif
 
 A requirements file declare all dependencies (Mangum, FastAPI, Uvicorn, ...). Use the following command to install the required dependencies:
 
-```
+```bash
 pip install -r ./requirements.txt
 ```
 
@@ -79,7 +79,9 @@ pip install -r ./requirements.txt
 
 This API can be run locally using the following command:
 
-`uvicorn app.app:app --reload --host 0.0.0.0 --port 5000`
+```bash
+uvicorn app.app:app --reload --host 0.0.0.0 --port 5000
+```
 
 You can then try out the API at the following URL:
 [http://0.0.0.0:5000/docs](http://0.0.0.0:5000/docs)
@@ -95,11 +97,15 @@ There are 2 Dockerfiles included in this project:
 
 - First we need to build the docker image
 
-`docker build -t kohonen-som .`
+```bash
+docker build -t kohonen-som .
+```
 
 - Then we can run the container locally like so:
 
-`docker run -p 5000:5000 kohonen-som:latest`
+```bash
+docker run -p 5000:5000 kohonen-som:latest
+```
 
 - You can then try out the API by visiting the following URL:
 [http://0.0.0.0:5000/docs](http://0.0.0.0:5000/docs)
@@ -112,11 +118,15 @@ There are 2 Dockerfiles included in this project:
 
 - First we need to build the docker image, note that this Dockerfile uses a Lambda specific base image.
 
-`docker build -t kohonen-som-lambda . -f Dockerfile.aws.lambda`
+```bash
+docker build -t kohonen-som-lambda . -f Dockerfile.aws.lambda
+```
 
 - then we can run the container locally like so:
 
-`docker run -p 8000:8080 kohonen-som-lambda:latest`
+```bash
+docker run -p 8000:8080 kohonen-som-lambda:latest
+```
 
 - unlike the previous Dockerfile, there is more to do to talk to it. We can use the following command to test the API locally. Don't even talk to me about that ugly URL, but its something that we just cannot change. 
 
