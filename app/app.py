@@ -26,7 +26,7 @@ async def kohonen(
     iterations: int = ITERATIONS,
 ):
     """
-    Kohonen Self-Organizing Map (SOM) algorithm using our python implementation
+    Kohonen Self-Organising Map (SOM) algorithm using our python implementation
     """
     try:
         som = Kohonen(
