@@ -78,7 +78,9 @@ pip install -r ./requirements.txt
 ## Running locally
 
 This API can be run locally using the following command:
+
 `uvicorn app.app:app --reload --host 0.0.0.0 --port 5000`
+
 You can then try out the API at the following URL:
 [http://0.0.0.0:5000/docs](http://0.0.0.0:5000/docs)
 
@@ -92,9 +94,11 @@ There are 2 Dockerfiles included in this project:
 ### Default Dockerfile
 
 - First we need to build the docker image
+
 `docker build -t kohonen-som .`
 
 - Then we can run the container locally like so:
+
 `docker run -p 5000:5000 kohonen-som:latest`
 
 - You can then try out the API by visiting the following URL:
@@ -107,9 +111,11 @@ There are 2 Dockerfiles included in this project:
 ### Dockerfile for AWS Lambda Container Images
 
 - First we need to build the docker image, note that this Dockerfile uses a Lambda specific base image.
+
 `docker build -t kohonen-som-lambda . -f Dockerfile.aws.lambda`
 
 - then we can run the container locally like so:
+
 `docker run -p 8000:8080 kohonen-som-lambda:latest`
 
 - unlike the previous Dockerfile, there is more to do to talk to it. We can use the following command to test the API locally. Don't even talk to me about that ugly URL, but its something that we just cannot change. 
@@ -119,6 +125,7 @@ curl -XPOST "http://localhost:8000/2015-03-31/functions/function/invocations" -d
 ```
 
 And it should reply with something like this:
+
 ```json
 {"statusCode": 200, "headers": {"content-disposition": "inline; filename=\"kohonen_som_input_output.png\"", "content-length": "30703", "content-type": "image/png"}, "multiValueHeaders": {}, "body": "iVBORw0KGgoAAAANSUhEUgAAAZAAAAGkCAIAAACQNuQgAAB3tklEQVR4nO29va71s...., "isBase64Encoded": true}
 ```
@@ -160,7 +167,3 @@ The algorithm could be vectorised using numpy, which would make it more efficien
 - Iterations: 1000
 - Execution time (hh:mm:ss.ms): 00:10:08.91 (over ten minutes!)
 ![Jupyter](/images/non-vectorised-1000.png)
-
-
-
-
