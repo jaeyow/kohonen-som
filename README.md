@@ -44,7 +44,7 @@ Although it maybe computationally expensive, a Kohonen SOM can be used to compre
 
 An online shopping platform can utilise users preferences to group them into different clusters and then recommend products based on the preferences of other users in the same cluster.
 
-### Installation
+## Installation
 
 A requirements file declare all dependencies (Mangum, FastAPI, Uvicorn, ...). Use the following command to install the required dependencies:
 
@@ -52,7 +52,7 @@ A requirements file declare all dependencies (Mangum, FastAPI, Uvicorn, ...). Us
 pip install -r ./requirements.txt
 ```
 
->#### Virtual Environment
+>### Virtual Environment
 >
 >It is best practice to use a virtual environment when working with Python. [pyenv](https://github.com/pyenv/pyenv) was used to manage the Python version, while [venv](https://docs.python.org/3/library/venv.html) was used to create the virtual environment. The following commands were used to create the virtual environment and install the required dependencies:
 >```bash
@@ -75,7 +75,7 @@ pip install -r ./requirements.txt
 >```
 >
 
-## Running locally
+### Running locally
 
 This API can be run locally using the following command:
 
@@ -86,7 +86,7 @@ uvicorn app.app:app --reload --host 0.0.0.0 --port 5000
 You can then try out the API at the following URL:
 [http://0.0.0.0:5000/docs](http://0.0.0.0:5000/docs)
 
-## Running on Docker
+## Containerisation
 
 There are 2 Dockerfiles included in this project: 
 - [Dockerfile](./Dockerfile) for running the API on any environment that runs Docker containers. (e.g. AWS Fargate, Azure Container Instances, Google Cloud Run, etc.)
@@ -140,7 +140,7 @@ And it should reply with something like this:
 {"statusCode": 200, "headers": {"content-disposition": "inline; filename=\"kohonen_som_input_output.png\"", "content-length": "30703", "content-type": "image/png"}, "multiValueHeaders": {}, "body": "iVBORw0KGgoAAAANSUhEUgAAAZAAAAGkCAIAAACQNuQgAAB3tklEQVR4nO29va71s...., "isBase64Encoded": true}
 ```
 
-### Productionising this API
+## Productionising this API
 
 Hurrah, we now have a docker image that we can install to AWS Lambda. Note that there is still more work to do complete this, such as setting up the API Gateway, but that is beyond the scope of this project.
 
@@ -155,7 +155,7 @@ To Deploy our Lambda API to AWS, we have a few options, from Click-Ops, AWS [Ser
 
 ![Swagger](/images/swagger-openapi.png)
 
-## Running on Jupyter
+## Running quick experiments on Jupyter
 I have prepared a Jupyter notebook to demonstrate the Kohonen Self-Organising Maps (SOM) algorithm. The notebook is available in the following link:
 [Jupyter Notebook](kohonen.ipynb)
 
